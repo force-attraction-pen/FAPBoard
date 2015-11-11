@@ -13,7 +13,7 @@
 // application bundle. To get the path to these resource, use the helper
 // method resourcePath() from ResourcePath.hpp
 //
-
+#include <iostream>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -23,20 +23,16 @@
 int main(int, char const**)
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
+    auto f = sf::VideoMode::getFullscreenModes()[0];
+    f.width = 1920*2;
+    f.height = 1200*2;
+    sf::RenderWindow window(sf::VideoMode(f.width, f.height), "SFML window");
 
-    // Set the Icon
-    sf::Image icon;
-    if (!icon.loadFromFile(resourcePath() + "icon.png")) {
-        return EXIT_FAILURE;
-    }
-    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
-
-    // Load a sprite to display
+    sf::Image image;
+    image.create(f.width, f.height);
+    
     sf::Texture texture;
-    if (!texture.loadFromFile(resourcePath() + "cute_image.jpg")) {
-        return EXIT_FAILURE;
-    }
+    texture.loadFromImage(image);
     sf::Sprite sprite(texture);
 
     // Create a graphical text to display
@@ -46,15 +42,6 @@ int main(int, char const**)
     }
     sf::Text text("Hello SFML", font, 50);
     text.setColor(sf::Color::Black);
-
-    // Load a music to play
-    sf::Music music;
-    if (!music.openFromFile(resourcePath() + "nice_music.ogg")) {
-        return EXIT_FAILURE;
-    }
-
-    // Play the music
-    music.play();
 
     // Start the game loop
     while (window.isOpen())
@@ -73,15 +60,21 @@ int main(int, char const**)
                 window.close();
             }
         }
+        auto mousePos = sf::Mouse::getPosition();
+        sf::Uint8 *pixels = new sf::Uint8[4]();
+        image.setPixel(mousePos.x, mousePos.y, sf::Color::White);
+        for (int i = 0; i <= 2; i++) {
+            image.setPixel(mousePos.x + i, mousePos.y, sf::Color::White);
+            image.setPixel(mousePos.x, mousePos.y + i, sf::Color::White);
+            image.setPixel(mousePos.x + i, mousePos.y + i, sf::Color::White);
+        }
+        texture.loadFromImage(image);
 
         // Clear screen
         window.clear();
 
         // Draw the sprite
         window.draw(sprite);
-
-        // Draw the string
-        window.draw(text);
 
         // Update the window
         window.display();
