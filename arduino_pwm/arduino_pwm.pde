@@ -71,5 +71,8 @@ void draw() {
   arduino.analogWrite(speedPinA, speed);
   arduino.digitalWrite(dir1PinA, Arduino.LOW);
   arduino.digitalWrite(dir2PinA, Arduino.HIGH);
+  
+  // Turn on LED at pin 13
+  arduino.digitalWrite(13, Arduino.HIGH);
   //}
 }
