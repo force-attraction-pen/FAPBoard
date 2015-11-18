@@ -14,34 +14,41 @@
 // method resourcePath() from ResourcePath.hpp
 //
 #include <iostream>
+#include <cmath>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 // Here is a small helper for you ! Have a look.
 #include "ResourcePath.hpp"
 
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 800
+
 int main(int, char const**)
 {
     // Create the main window
-    auto f = sf::VideoMode::getFullscreenModes()[0];
-    f.width = 1920*2;
-    f.height = 1200*2;
-    sf::RenderWindow window(sf::VideoMode(f.width, f.height), "SFML window");
-
+    auto screen = sf::VideoMode::getDesktopMode();
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML window");
     sf::Image image;
-    image.create(f.width, f.height);
+    image.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+    for (int x = 0; x < WINDOW_WIDTH; x++) {
+        for (int y = 0; y < WINDOW_HEIGHT; y++) {
+            int r = 127*(1+std::sin(2*M_PI*(float)x/WINDOW_WIDTH));
+            sf::Color randCol(r, r, r);
+            image.setPixel(x, y, randCol);
+        }
+    }
+    
+    sf::Image overlay;
+    overlay.create(WINDOW_WIDTH, WINDOW_HEIGHT, sf::Color::Transparent);
     
     sf::Texture texture;
     texture.loadFromImage(image);
     sf::Sprite sprite(texture);
-
-    // Create a graphical text to display
-    sf::Font font;
-    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
-        return EXIT_FAILURE;
-    }
-    sf::Text text("Hello SFML", font, 50);
-    text.setColor(sf::Color::Black);
+    
+    sf::Texture ovTex;
+    ovTex.loadFromImage(overlay);
+    sf::Sprite ovSpr(ovTex);
 
     // Start the game loop
     while (window.isOpen())
@@ -61,20 +68,21 @@ int main(int, char const**)
             }
         }
         auto mousePos = sf::Mouse::getPosition();
-        sf::Uint8 *pixels = new sf::Uint8[4]();
-        image.setPixel(mousePos.x, mousePos.y, sf::Color::White);
-        for (int i = 0; i <= 2; i++) {
-            image.setPixel(mousePos.x + i, mousePos.y, sf::Color::White);
-            image.setPixel(mousePos.x, mousePos.y + i, sf::Color::White);
-            image.setPixel(mousePos.x + i, mousePos.y + i, sf::Color::White);
+//        std::cout << mousePos.x << " " << mousePos.y << std::endl;
+        if (mousePos.x <= screen.width || mousePos.y <= screen.height) {
+            sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
+            auto pixel = image.getPixel(windowPos.x, windowPos.y);
+            overlay.setPixel(windowPos.x, windowPos.y, sf::Color::Red);
+            ovTex.loadFromImage(overlay);
+//            std::cout << (int) pixel.r << std::endl;
         }
-        texture.loadFromImage(image);
-
+        
         // Clear screen
         window.clear();
 
         // Draw the sprite
         window.draw(sprite);
+        window.draw(ovSpr);
 
         // Update the window
         window.display();
