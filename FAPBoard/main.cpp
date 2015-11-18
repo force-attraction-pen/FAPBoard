@@ -16,8 +16,11 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include <boost/scoped_ptr.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+
+#include "arduino-serial-lib.h"
 
 // Here is a small helper for you ! Have a look.
 #include "ResourcePath.hpp"
