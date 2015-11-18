@@ -15,6 +15,7 @@
 //
 #include <iostream>
 #include <cmath>
+#include <string>
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -28,19 +29,26 @@ int main(int, char const**)
 {
     // Create the main window
     auto screen = sf::VideoMode::getDesktopMode();
-    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "SFML window");
+    sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
     sf::Image image;
     image.create(WINDOW_WIDTH, WINDOW_HEIGHT);
     for (int x = 0; x < WINDOW_WIDTH; x++) {
         for (int y = 0; y < WINDOW_HEIGHT; y++) {
-            int r = 127*(1+std::sin(2*M_PI*(float)x/WINDOW_WIDTH));
+            int r = 127*(1-std::cos(2*M_PI*(float)x/WINDOW_WIDTH));
             sf::Color randCol(r, r, r);
             image.setPixel(x, y, randCol);
         }
     }
     
+    // initialise overlay and font
     sf::Image overlay;
     overlay.create(WINDOW_WIDTH, WINDOW_HEIGHT, sf::Color::Transparent);
+    sf::Font font;
+    if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
+        return EXIT_FAILURE;
+    }
+    sf::Text text("?", font, 50);
+    text.setColor(sf::Color::Blue);
     
     sf::Texture texture;
     texture.loadFromImage(image);
@@ -49,7 +57,7 @@ int main(int, char const**)
     sf::Texture ovTex;
     ovTex.loadFromImage(overlay);
     sf::Sprite ovSpr(ovTex);
-
+    
     // Start the game loop
     while (window.isOpen())
     {
@@ -68,23 +76,30 @@ int main(int, char const**)
             }
         }
         auto mousePos = sf::Mouse::getPosition();
-//        std::cout << mousePos.x << " " << mousePos.y << std::endl;
-        if (mousePos.x <= screen.width || mousePos.y <= screen.height) {
+        if (mousePos.x < screen.width || mousePos.y < screen.height) {
             sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
             auto pixel = image.getPixel(windowPos.x, windowPos.y);
+
+            overlay.create(WINDOW_WIDTH, WINDOW_HEIGHT, sf::Color::Transparent);
+            
             overlay.setPixel(windowPos.x, windowPos.y, sf::Color::Red);
+            overlay.setPixel(windowPos.x+1, windowPos.y, sf::Color::Red);
+            overlay.setPixel(windowPos.x, windowPos.y+1, sf::Color::Red);
+            overlay.setPixel(windowPos.x+1, windowPos.y+1, sf::Color::Red);
+            
+            // set text to show the brightness (r, g and b are the same so doesn't matter which)
+            sf::String s(std::to_string(pixel.r));
+            text.setString(s);
+            
             ovTex.loadFromImage(overlay);
-//            std::cout << (int) pixel.r << std::endl;
         }
         
-        // Clear screen
         window.clear();
 
-        // Draw the sprite
         window.draw(sprite);
         window.draw(ovSpr);
+        window.draw(text);
 
-        // Update the window
         window.display();
     }
 
