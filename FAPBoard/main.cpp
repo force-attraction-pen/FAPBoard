@@ -20,6 +20,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "arduino-serial-lib.c"
 #include "arduino-serial-lib.h"
 
 // Here is a small helper for you ! Have a look.
@@ -30,6 +31,11 @@
 
 int main(int, char const**)
 {
+    char* buf[1000];
+    const char* de = "/dev/cu.usbmodem1421";
+    auto sp = serialport_init(de, 9600);
+
+
     // Create the main window
     auto screen = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
@@ -93,7 +99,9 @@ int main(int, char const**)
             // set text to show the brightness (r, g and b are the same so doesn't matter which)
             sf::String s(std::to_string(pixel.r));
             text.setString(s);
-            
+            int wr = serialport_writebyte(sp, pixel.r);
+            //std::cout << wr;
+            auto read = serialport_read_until(sp, *buf, 'a', 10, 10);
             ovTex.loadFromImage(overlay);
         }
         
