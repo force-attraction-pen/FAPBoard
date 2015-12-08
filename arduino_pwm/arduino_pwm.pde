@@ -40,13 +40,10 @@ int speedPinA = 9; // Needs to be a PWM pin to be able to control motor speed
 void setup() {
   size(512, 200);
 
-  // Prints out the available serial ports.
-  //println(Arduino.list());
-
   // Modify this line, by changing the "0" to the index of the serial
   // port corresponding to your Arduino board (as it appears in the list
   // printed by the line above).
-  arduino = new Arduino(this, Arduino.list()[3], 57600);
+  arduino = new Arduino(this, Arduino.list()[1], 57600);
 
   arduino.pinMode(dir1PinA, Arduino.OUTPUT);
   arduino.pinMode(dir2PinA, Arduino.OUTPUT);
@@ -64,14 +61,23 @@ void draw() {
 
   //if (myPort.available() > 0) {
   //int inByte = myPort.read();
+
   int speed = constrain(mouseX / 2, 0, 255);
+  //int speed = 255;
 
   // Output analog values (PWM waves) to digital pin 9.
   // Note that only certain Arduino pins support analog output (PWM).
-  arduino.analogWrite(speedPinA, speed);
-  arduino.digitalWrite(dir1PinA, Arduino.LOW);
-  arduino.digitalWrite(dir2PinA, Arduino.HIGH);
   
+
+  if (speed < 20) {
+    arduino.digitalWrite(dir1PinA, Arduino.LOW);
+  } else {
+    arduino.digitalWrite(dir1PinA, Arduino.LOW);
+    arduino.digitalWrite(dir2PinA, Arduino.HIGH);
+    arduino.analogWrite(speedPinA, speed);
+  }
+
+
   // Turn on LED at pin 13
   arduino.digitalWrite(13, Arduino.HIGH);
   //}
