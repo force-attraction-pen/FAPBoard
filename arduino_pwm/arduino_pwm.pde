@@ -33,6 +33,9 @@ Arduino arduino;
 // The serial port
 Serial myPort;
 
+int width = 512;
+int height = 200;
+
 int dir1PinA = 2;
 int dir2PinA = 3;
 int speedPinA = 9; // Needs to be a PWM pin to be able to control motor speed
@@ -63,18 +66,40 @@ void draw() {
   //int inByte = myPort.read();
 
   int speed = constrain(mouseX / 2, 0, 255);
+  textSize(32);
+  fill(255,0,0);
+  textMode(CENTER);
+  text(speed, width/2, height/2);
+  
   //int speed = 255;
 
   // Output analog values (PWM waves) to digital pin 9.
   // Note that only certain Arduino pins support analog output (PWM).
   
 
-  if (speed < 20) {
+  if (speed < 20) 
+  {
     arduino.digitalWrite(dir1PinA, Arduino.LOW);
-  } else {
+    //arduino.digitalWrite(dir2PinA, Arduino.LOW);
+    //arduino.analogWrite(speedPinA, 0);
+    println("Stopped");
+  } else if (speed >= 20 && speed < 180) 
+  {
+    int repelSpeed = int(map(speed, 20, 179, 0, 255));
+    //arduino.analogWrite(speedPinA, repelSpeed);
+    arduino.analogWrite(speedPinA, 255);
+    arduino.digitalWrite(dir1PinA, Arduino.HIGH);
+    arduino.digitalWrite(dir2PinA, Arduino.LOW);
+    println("Repel Speed: " + repelSpeed); 
+    
+  } else 
+  {
+    int attractSpeed = int(map(speed, 180, 255, 0, 255));
+    //arduino.analogWrite(speedPinA, attractSpeed);
+    arduino.analogWrite(speedPinA, 255);
     arduino.digitalWrite(dir1PinA, Arduino.LOW);
     arduino.digitalWrite(dir2PinA, Arduino.HIGH);
-    arduino.analogWrite(speedPinA, speed);
+    println("Attract Speed: " + attractSpeed);
   }
 
 
