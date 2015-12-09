@@ -13,6 +13,7 @@
 		112BA4C41BF363F2002BD754 /* nice_music.ogg in Resources */ = {isa = PBXBuildFile; fileRef = 112BA4C31BF363F2002BD754 /* nice_music.ogg */; };
 		112BA4C61BF363F2002BD754 /* sansation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 112BA4C51BF363F2002BD754 /* sansation.ttf */; };
 		112BA4C81BF363F2002BD754 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 112BA4C71BF363F2002BD754 /* icon.png */; };
+		11E92C611BFCA8C7006E5663 /* arduino-serial-lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 11E92C5F1BFCA8C7006E5663 /* arduino-serial-lib.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,8 @@
 		112BA4C31BF363F2002BD754 /* nice_music.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; path = nice_music.ogg; sourceTree = "<group>"; };
 		112BA4C51BF363F2002BD754 /* sansation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = sansation.ttf; sourceTree = "<group>"; };
 		112BA4C71BF363F2002BD754 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
+		11E92C5F1BFCA8C7006E5663 /* arduino-serial-lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "arduino-serial-lib.c"; sourceTree = "<group>"; };
+		11E92C601BFCA8C7006E5663 /* arduino-serial-lib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "arduino-serial-lib.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +65,8 @@
 				112BA4BE1BF363F2002BD754 /* main.cpp */,
 				112BA4C01BF363F2002BD754 /* Resources */,
 				112BA4B91BF363F2002BD754 /* Supporting Files */,
+				11E92C5F1BFCA8C7006E5663 /* arduino-serial-lib.c */,
+				11E92C601BFCA8C7006E5663 /* arduino-serial-lib.h */,
 			);
 			path = FAPBoard;
 			sourceTree = "<group>";
@@ -173,6 +178,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				112BA4BF1BF363F2002BD754 /* main.cpp in Sources */,
+				11E92C611BFCA8C7006E5663 /* arduino-serial-lib.c in Sources */,
 				112BA4BC1BF363F2002BD754 /* ResourcePath.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,6 +317,7 @@
 				112BA4CD1BF363F2002BD754 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

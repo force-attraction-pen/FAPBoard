@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "D342446A0615C298C4D7346A643D3E2859FF0BC2",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "D342446A0615C298C4D7346A643D3E2859FF0BC2" : 0,
+    "D4DABDC159CF2F41E7C4208AB7A5E4E479F6135A" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "3F5C429B-DDCA-4BB3-AF81-FEC7483D0CA5",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "D342446A0615C298C4D7346A643D3E2859FF0BC2" : "FAPBoard\/",
+    "D4DABDC159CF2F41E7C4208AB7A5E4E479F6135A" : "..\/.."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "FAPBoard",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "FAPBoard.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/alxhill\/FAPBoard",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D342446A0615C298C4D7346A643D3E2859FF0BC2"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/zacoppotamus\/Coursework",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "D4DABDC159CF2F41E7C4208AB7A5E4E479F6135A"
+    }
+  ]
+}
