@@ -29,6 +29,8 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 800
 
+
+
 int main(int, char const**)
 {
     char* buf[1000];
@@ -40,14 +42,15 @@ int main(int, char const**)
     auto screen = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
     sf::Image image;
-    image.create(WINDOW_WIDTH, WINDOW_HEIGHT);
-    for (int x = 0; x < WINDOW_WIDTH; x++) {
-        for (int y = 0; y < WINDOW_HEIGHT; y++) {
-            int r = 127*(1-std::cos(2*M_PI*(float)x/WINDOW_WIDTH));
-            sf::Color randCol(r, r, r);
-            image.setPixel(x, y, randCol);
-        }
-    }
+//    image.create(WINDOW_WIDTH, WINDOW_HEIGHT);
+//    for (int x = 0; x < WINDOW_WIDTH; x++) {
+//        for (int y = 0; y < WINDOW_HEIGHT; y++) {
+//            int r = 127*(1-std::cos(2*M_PI*(float)x/WINDOW_WIDTH));
+//            sf::Color randCol(r, r, r);
+//            image.setPixel(x, y, randCol);
+//        }
+//    }
+    image.loadFromFile(resourcePath() + "maze.bmp");
     
     // initialise overlay and font
     sf::Image overlay;
@@ -58,11 +61,16 @@ int main(int, char const**)
     }
     sf::Text text("?", font, 50);
     text.setColor(sf::Color::Blue);
-    
+    sf::Vector2f targetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
     sf::Texture texture;
     texture.loadFromImage(image);
+    //texture.loadFromFile(resourcePath() + "maze.bmp");
+
     sf::Sprite sprite(texture);
-    
+    sprite.setScale(
+                    targetSize.x / sprite.getLocalBounds().width,
+                    targetSize.y / sprite.getLocalBounds().height);
     sf::Texture ovTex;
     ovTex.loadFromImage(overlay);
     sf::Sprite ovSpr(ovTex);
