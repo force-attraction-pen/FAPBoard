@@ -36,12 +36,27 @@ void loop() {
   if (Serial.available() > 0) {
     // get incoming byte:
     inByte = Serial.read();
-    Serial.print(inByte);
-    Serial.print("\n");
-    Serial.write(inByte);
-    analogWrite(9, inByte);
-    digitalWrite(2, LOW);
-    digitalWrite(3, HIGH);
+    if (inByte < 20) {
+      Serial.print("stopped");
+      Serial.print("\n");
+      digitalWrite(2, LOW);
+    } else if (inByte >= 20 && inByte < 180) {
+      Serial.print("repel");
+      analogWrite(9,255);
+      digitalWrite(2,HIGH);
+      digitalWrite(3,LOW);
+    } else {
+      Serial.print("attract");
+      analogWrite(2,inByte);
+      digitalWrite(2, LOW);
+      digitalWrite(3, HIGH);
+      
+    }
+    //Serial.print(inByte);
+    //Serial.print("\n");
+    //analogWrite(9, inByte);
+    //digitalWrite(2, LOW);
+    //digitalWrite(3, HIGH);
     digitalWrite(13, HIGH); 
   }
     // turn the LED on (HIGH is the voltage level)
