@@ -64,6 +64,14 @@ void loop() {
         Serial.println("   ");
         break;
 
+      case '6': // Motor 2 Reverse
+        analogWrite(speedPinA, 255);
+        digitalWrite(dir1PinA, HIGH);
+        digitalWrite(dir2PinA, LOW);
+        Serial.println("Motor 2 Reverse");
+        Serial.println("   ");
+        break;
+
       default:
         // turn all the connections off if an unmapped key is pressed:
         for (int thisPin = 2; thisPin < 11; thisPin++) {
