@@ -50,7 +50,17 @@ int getCellAverage(sf::Image *maze, int x, int y, int cellSize) {
         }
     }
     std::cout << "sum: " << sum << std::endl;
-    return sum  / (cellSize * cellSize);
+    return 255 - sum  / (cellSize * cellSize);
+}
+
+void sendData(int sp, int force) {
+    int data = 1;
+    if (force < 20)
+        data = 0;
+    else if (force > 180)
+        data = 2;
+    
+    int wr = serialport_writebyte(sp, force/2);
 }
 
 int main(int, char const**)
@@ -62,7 +72,7 @@ int main(int, char const**)
     // Create the main window
     auto screen = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
-    Maze m(WINDOW_WIDTH, WINDOW_HEIGHT, 40);
+    Maze m(WINDOW_WIDTH, WINDOW_HEIGHT, 50);
     sf::Image *image = m.generate();
 
     // initialise overlay and font
@@ -72,7 +82,7 @@ int main(int, char const**)
     if (!font.loadFromFile(resourcePath() + "sansation.ttf")) {
         return EXIT_FAILURE;
     }
-    sf::Text text("?", font, 50);
+    sf::Text text("?", font, 60);
     text.setColor(sf::Color::Blue);
 
     sf::Texture texture;
@@ -109,7 +119,8 @@ int main(int, char const**)
         auto mousePos = sf::Mouse::getPosition();
         if (mousePos.x < screen.width || mousePos.y < screen.height) {
             sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
-            auto force = getCellAverage(image, windowPos.x, windowPos.y, m.getCellSize());
+//            auto force = getCellAverage(image, windowPos.x, windowPos.y, m.getCellSize());
+            auto force = image->getPixel(windowPos.x, windowPos.y).r;
 
             overlay.create(WINDOW_WIDTH+1, WINDOW_HEIGHT+1, sf::Color::Transparent);
             
@@ -118,12 +129,9 @@ int main(int, char const**)
             overlay.setPixel(windowPos.x,   windowPos.y+1, sf::Color::Red);
             overlay.setPixel(windowPos.x+1, windowPos.y+1, sf::Color::Red);
             
-            // set text to show the brightness (r, g and b are the same so doesn't matter which)
             sf::String s(std::to_string(force));
             text.setString(s);
-            int wr = serialport_writebyte(sp, force);
-            //std::cout << wr;
-            auto read = serialport_read_until(sp, *buf, 'a', 10, 10);
+            sendData(sp, force);
             ovTex.loadFromImage(overlay);
         }
         
