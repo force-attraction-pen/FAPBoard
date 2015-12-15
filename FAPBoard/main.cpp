@@ -31,6 +31,27 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 800
 
+int clamp(int n, int min, int max) {
+    if (n < min) n = min;
+    if (n > max) n = max;
+    return n;
+}
+
+int getCellAverage(sf::Image *maze, int x, int y, int cellSize) {
+    cellSize -= 5;
+    sf::Vector2u s = maze->getSize();
+    int startX = clamp(x - (cellSize/2), 0, s.x);
+    int startY = clamp(y - (cellSize/2), 0, s.y);
+    int sum = 0;
+    std::cout <<"x:"<<x<<" y:"<<y<<" startX:"<<startX<<" startY:"<<startY<<" cellSize:"<<cellSize<<std::endl;
+    for (int i = startX; i < startX + cellSize; i++) {
+        for (int j = startY; j < startY + cellSize; j++) {
+            sum += maze->getPixel(i, j).r;
+        }
+    }
+    std::cout << "sum: " << sum << std::endl;
+    return sum  / (cellSize * cellSize);
+}
 
 int main(int, char const**)
 {
@@ -41,7 +62,7 @@ int main(int, char const**)
     // Create the main window
     auto screen = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
-    Maze m(WINDOW_WIDTH, WINDOW_HEIGHT);
+    Maze m(WINDOW_WIDTH, WINDOW_HEIGHT, 40);
     sf::Image *image = m.generate();
 
     // initialise overlay and font
@@ -88,19 +109,19 @@ int main(int, char const**)
         auto mousePos = sf::Mouse::getPosition();
         if (mousePos.x < screen.width || mousePos.y < screen.height) {
             sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
-            auto pixel = image->getPixel(windowPos.x, windowPos.y);
+            auto force = getCellAverage(image, windowPos.x, windowPos.y, m.getCellSize());
 
             overlay.create(WINDOW_WIDTH+1, WINDOW_HEIGHT+1, sf::Color::Transparent);
             
-            overlay.setPixel(windowPos.x, windowPos.y, sf::Color::Red);
+            overlay.setPixel(windowPos.x,   windowPos.y, sf::Color::Red);
             overlay.setPixel(windowPos.x+1, windowPos.y, sf::Color::Red);
-            overlay.setPixel(windowPos.x, windowPos.y+1, sf::Color::Red);
+            overlay.setPixel(windowPos.x,   windowPos.y+1, sf::Color::Red);
             overlay.setPixel(windowPos.x+1, windowPos.y+1, sf::Color::Red);
             
             // set text to show the brightness (r, g and b are the same so doesn't matter which)
-            sf::String s(std::to_string(pixel.r));
+            sf::String s(std::to_string(force));
             text.setString(s);
-            int wr = serialport_writebyte(sp, pixel.r);
+            int wr = serialport_writebyte(sp, force);
             //std::cout << wr;
             auto read = serialport_read_until(sp, *buf, 'a', 10, 10);
             ovTex.loadFromImage(overlay);

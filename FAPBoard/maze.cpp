@@ -13,9 +13,14 @@
 
 class Maze {
 public:
-    Maze(int w, int h) {
+    Maze(int w, int h, int cs) {
         width = w;
         height = h;
+        cellSize = cs;
+    }
+    
+    int getCellSize() {
+        return cellSize;
     }
 private:
     enum Dir {
@@ -30,7 +35,7 @@ private:
         int i; // index
         Dir d; // direction
     } Edge;
-    
+
     int cellSize = 40;
     int cellWidth;
     int cellHeight;
