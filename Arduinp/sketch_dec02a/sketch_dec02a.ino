@@ -14,19 +14,21 @@
  */
 unsigned int inByte = 0;
 
+int PIN_A = 2;
+int PIN_B = 3;
+int PIN_POWER = 9;
+
 // the setup function runs once when you press reset or power the board
 void setup() {
-  pinMode(9, OUTPUT);
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
+  pinMode(PIN_POWER, OUTPUT);
+  pinMode(PIN_A, OUTPUT);
+  pinMode(PIN_B, OUTPUT);
 
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
   establishContact();  // send a byte to establish contact until receiver responds
-
-  
 }
 
 // the loop function runs over and over again forever
@@ -36,31 +38,28 @@ void loop() {
     // get incoming byte:
     inByte = Serial.read();
     Serial.print(inByte);
-    if (inByte < 20) {
-      Serial.print(" stopped\n");
-      analogWrite(9,0);
-      digitalWrite(2, LOW);
-      digitalWrite(3, HIGH);
-//      digitalWrite(3, LOW);
-    } else if (inByte >= 20 && inByte < 180) {
-      Serial.print(" repel\n");
-      analogWrite(9,255);
-      digitalWrite(2,HIGH);
-      digitalWrite(3,LOW);
-    } else {
-      Serial.print(" attract\n");
-      analogWrite(9,255);
-      digitalWrite(2, LOW);
-      digitalWrite(3, HIGH);
+    switch(inByte) {
+      case 3:
+        Serial.print(" repel\n");
+        analogWrite(9,255);
+        digitalWrite(2,HIGH);
+        digitalWrite(3,LOW);
+        break;
+      case 2:
+        Serial.print(" stopped\n");
+        analogWrite(9,0);
+        digitalWrite(2, LOW);
+        digitalWrite(3, HIGH);
+        break;
+      case 1:
+        Serial.print(" attract\n");
+        analogWrite(9,255);
+        digitalWrite(2,LOW);
+        digitalWrite(3,HIGH);      
+        break;
       
     }
-    //Serial.print(inByte);
-    //Serial.print("\n");
-    //analogWrite(9, inByte);
-    //digitalWrite(2, LOW);
-    //digitalWrite(3, HIGH);
   }
-    // turn the LED on (HIGH is the voltage level)
 }
 
 void establishContact() {

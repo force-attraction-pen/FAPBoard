@@ -43,7 +43,7 @@ int getCellAverage(sf::Image *maze, int x, int y, int cellSize) {
     int startX = clamp(x - (cellSize/2), 0, s.x);
     int startY = clamp(y - (cellSize/2), 0, s.y);
     int sum = 0;
-    std::cout <<"x:"<<x<<" y:"<<y<<" startX:"<<startX<<" startY:"<<startY<<" cellSize:"<<cellSize<<std::endl;
+//    std::cout <<"x:"<<x<<" y:"<<y<<" startX:"<<startX<<" startY:"<<startY<<" cellSize:"<<cellSize<<std::endl;
     for (int i = startX; i < startX + cellSize; i++) {
         for (int j = startY; j < startY + cellSize; j++) {
             sum += maze->getPixel(i, j).r;
@@ -54,13 +54,13 @@ int getCellAverage(sf::Image *maze, int x, int y, int cellSize) {
 }
 
 void sendData(int sp, int force) {
-    int data = 1;
+    int data = 2;
     if (force < 20)
-        data = 0;
+        data = 1;
     else if (force > 180)
-        data = 2;
+        data = 3;
     
-    int wr = serialport_writebyte(sp, force/2);
+    int wr = serialport_writebyte(sp, data);
 }
 
 int main(int, char const**)
@@ -119,8 +119,8 @@ int main(int, char const**)
         auto mousePos = sf::Mouse::getPosition();
         if (mousePos.x < screen.width || mousePos.y < screen.height) {
             sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
-//            auto force = getCellAverage(image, windowPos.x, windowPos.y, m.getCellSize());
-            auto force = image->getPixel(windowPos.x, windowPos.y).r;
+            auto force = getCellAverage(image, windowPos.x, windowPos.y, m.getCellSize());
+//            auto force = image->getPixel(windowPos.x, windowPos.y).r;
 
             overlay.create(WINDOW_WIDTH+1, WINDOW_HEIGHT+1, sf::Color::Transparent);
             
