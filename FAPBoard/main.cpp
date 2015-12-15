@@ -15,6 +15,8 @@
 //
 #include <iostream>
 #include <cmath>
+#include <random>
+#include <algorithm>
 #include <string>
 #include <boost/scoped_ptr.hpp>
 #include <SFML/Audio.hpp>
@@ -29,7 +31,128 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 800
 
+enum Dir {
+    NONE = 0,
+    N = 1 << 1,
+    S = 1 << 2,
+    W = 1 << 3,
+    E = 1 << 4
+};
 
+int cellSize = 40;
+int cellWidth;
+int cellHeight;
+Dir *cells;
+sf::Image *maze;
+
+typedef struct edge {
+    int i; // index
+    Dir d; // direction
+} Edge;
+
+std::vector<Edge*> frontier;
+
+void fillCell(int index, sf::Color color, Dir direction = NONE) {
+    int i = index % cellWidth,
+        j = index / cellWidth;
+
+    sf::Image block;
+    block.create(cellSize, cellSize, color);
+    
+    if (direction & (S | E)) {
+        if (direction == E) {
+            maze->copy(block, (i+1) * (cellSize + cellSize), j * cellSize + (j+1) * cellSize);
+        } else if (direction == S) {
+            maze->copy(block, i*cellSize + (i+1) * cellSize, (j+1)*(cellSize + cellSize));
+        }
+    } else {
+        maze->copy(block, i*cellSize + (i+1) * cellSize, j*cellSize + (j+1)*cellSize);
+    }
+}
+
+// create a simple maze using recursive division method - see wikipedia for details
+sf::Image *createMaze(unsigned int width, unsigned int height) {
+
+    cellWidth = (width-cellSize)/(cellSize + cellSize);
+    cellHeight = (height-cellSize)/(cellSize + cellSize);
+    
+    cells = new Dir[cellWidth * cellHeight]();
+    
+    maze = new sf::Image;
+    frontier.clear();
+    maze->create(width, height, sf::Color::Black);
+    
+    frontier.push_back(new Edge{0, S});
+    frontier.push_back(new Edge{0, E});
+    fillCell(0, sf::Color::White);
+    
+    while (frontier.size() > 0) {
+        Edge *e = frontier.back();
+        frontier.pop_back();
+        
+        int i = e->i;
+        Dir d = e->d;
+        
+        int newI = i + (d == N ? -cellWidth : d == S ? cellWidth : d == W ? -1 : 1);
+        int x = e->i % cellWidth;
+        int y = e->i / cellWidth;
+        int newX, newY, newDir;
+        bool open = cells[newI] == NONE;
+        sf::Color cellColour = open ? sf::Color::White : sf::Color::Black;
+        
+        switch (d) {
+            case N:
+                fillCell(newI, cellColour, S);
+                newX = x;
+                newY = y - 1;
+                newDir = S;
+                break;
+            case S:
+                fillCell(i, cellColour, S);
+                newX = x;
+                newY = y + 1;
+                newDir = N;
+                break;
+            case W:
+                fillCell(newI, cellColour, E);
+                newX = x - 1;
+                newY = y;
+                newDir = E;
+                break;
+            case E:
+                fillCell(i, cellColour, E);
+                newX = x + 1;
+                newY = y;
+                newDir = W;
+                break;
+            default:
+                std::cout << "WTF????\n";
+                break;
+        }
+        
+        if (open) {
+            fillCell(newI, cellColour);
+            cells[i] = (Dir)(d | cells[i]);
+            cells[newI] = (Dir)(d | cells[newI]);
+            
+            if (newY > 0 && cells[newI - cellWidth] == NONE) {
+                frontier.push_back(new Edge{newI, N});
+            }
+            if (newY < cellHeight - 1 && cells[newI + cellWidth] == NONE) {
+                frontier.push_back(new Edge{newI, S});
+            }
+            if (newX > 0 && cells[newI - 1] == NONE) {
+                frontier.push_back(new Edge{newI, W});
+            }
+            if (newX < cellWidth - 1 && cells[newI + 1] == NONE) {
+                frontier.push_back(new Edge{newI, E});
+            }
+            std::random_shuffle(frontier.begin(), frontier.end());
+        }
+    }
+    
+    return maze;
+}
 
 int main(int, char const**)
 {
@@ -41,7 +164,7 @@ int main(int, char const**)
     // Create the main window
     auto screen = sf::VideoMode::getDesktopMode();
     sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "FAPBoard");
-    sf::Image image;
+    sf::Image *image = createMaze(WINDOW_WIDTH, WINDOW_HEIGHT);
 //    image.create(WINDOW_WIDTH, WINDOW_HEIGHT);
 //    for (int x = 0; x < WINDOW_WIDTH; x++) {
 //        for (int y = 0; y < WINDOW_HEIGHT; y++) {
@@ -50,7 +173,7 @@ int main(int, char const**)
 //            image.setPixel(x, y, randCol);
 //        }
 //    }
-    image.loadFromFile(resourcePath() + "maze.bmp");
+//    image->loadFromFile(resourcePath() + "maze.bmp");
     
     // initialise overlay and font
     sf::Image overlay;
@@ -64,7 +187,7 @@ int main(int, char const**)
     sf::Vector2f targetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
     sf::Texture texture;
-    texture.loadFromImage(image);
+    texture.loadFromImage(*image);
     //texture.loadFromFile(resourcePath() + "maze.bmp");
 
     sf::Sprite sprite(texture);
@@ -95,9 +218,9 @@ int main(int, char const**)
         auto mousePos = sf::Mouse::getPosition();
         if (mousePos.x < screen.width || mousePos.y < screen.height) {
             sf::Vector2i windowPos(WINDOW_WIDTH * mousePos.x/screen.width,WINDOW_HEIGHT * mousePos.y/screen.height);
-            auto pixel = image.getPixel(windowPos.x, windowPos.y);
+            auto pixel = image->getPixel(windowPos.x, windowPos.y);
 
-            overlay.create(WINDOW_WIDTH, WINDOW_HEIGHT, sf::Color::Transparent);
+            overlay.create(WINDOW_WIDTH+1, WINDOW_HEIGHT+1, sf::Color::Transparent);
             
             overlay.setPixel(windowPos.x, windowPos.y, sf::Color::Red);
             overlay.setPixel(windowPos.x+1, windowPos.y, sf::Color::Red);
